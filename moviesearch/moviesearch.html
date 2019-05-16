@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .center {
+            text-align: center;
+        }
+
+        .container {
+            margin: auto;
+            border: 3px solid black;
+        }
+
+        .searchContainer {
+            border-top: 3px solid black;
+        }
+        .wrapper {
+            margin: 10px;
+            text-align: center;
+        }
+
+        .searchForm {
+            margin: auto;
+        }
+
+        .wrapperContainer {
+            margin: auto;
+            width: 30%;
+        }
+
+        .width120 {
+            width: 120px;
+        }
+        .results{
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-evenly;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="searchForMovie">
+            <h1 class="center">Search For a Movie</h1>
+            <hr>
+            <form class="searchForm"></form>
+            <div class="wrapperContainer">
+                <div class="wrapper">
+                    <label class="searchLabel">Name</label>
+                    <input type="text" id="s" name="s" class="searchBox width120">
+                </div>
+                <div class="wrapper">
+                    <label class="searchLabel">Year</label>
+                    <input type="text" id="y" name="y" class="searchBox width120">
+                </div>
+                <div class="wrapper">
+                    <label class="searchLabel">Type</label>
+                    <select id="type" name="typeOfSearch" style="width: 100px;">
+                        <option value="movie" selected>Movie</option>
+                        <option value="series">Series</option>
+                        <option value="episode">Episode</option>
+                    </select>
+                    <button id="submitButton" type="submit">Submit</button>
+                </div>
+                <div class="searchResults center">
+                </div>
+            </div>
+            <div class="searchContainer">
+                <div class="results">
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        var results = "";
+        document.querySelector("#submitButton").addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(".results").innerHTML = "";
+            if (s.value.length >= 3) {
+                fetch('http://www.omdbapi.com/?s=' + s.value + '&y=' + y.value + '&type=' + type.value + '&apikey=e4b71265')
+                    .then(function (response) {
+                        if (!response.ok) {
+                            console.log("Ooops... something went wrong!")
+                        }
+                        return response.json();
+                    })
+                    .then(function (res) {
+                        results = res;
+                        console.log(res);
+                        document.querySelector('.searchResults').innerText = "There were " + res.totalResults + " results.";
+                        res.Search.forEach(function (val) {
+                            var newFigure = document.createElement("figure");
+                            var newFigcaption = document.createElement("figcaption");
+                            var newImg = document.createElement("img");
+                            newFigure.appendChild(newImg);
+                            newImg.src = val.Poster;
+                            newFigure.appendChild(newFigcaption);
+                            newFigcaption.innerText = val.Title;
+                            document.querySelector(".results").appendChild(newFigure);
+
+                        })
+                    })
+            } else {
+                document.querySelector('.searchResults').innerText = "Please use at least 3 characters";
+                console.log("less than 3")
+            }
+        })
+
+    </script>
+</body>
+
+</html>
